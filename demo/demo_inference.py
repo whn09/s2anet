@@ -12,6 +12,7 @@ from mmdet.apis import init_detector, inference_detector
 from mmdet.core import rotated_box_to_poly_single
 from mmdet.datasets import build_dataset
 
+import time
 
 def show_result_rbox(img,
                      detections,
@@ -56,9 +57,10 @@ def show_result_rbox(img,
 
 def save_det_result(config_file, out_dir, checkpoint_file=None, img_dir=None, colormap=None):
     cfg = Config.fromfile(config_file)
-    data_test = cfg.data.test
-    dataset = build_dataset(data_test)
-    classnames = dataset.CLASSES
+#     data_test = cfg.data.test
+#     dataset = build_dataset(data_test)
+#     classnames = dataset.CLASSES
+    classnames = [i for i in range(15)]  # TODO
     # use checkpoint path in cfg
     if not checkpoint_file:
         checkpoint_file = osp.join(cfg.work_dir, 'latest.pth')
@@ -72,6 +74,7 @@ def save_det_result(config_file, out_dir, checkpoint_file=None, img_dir=None, co
     for img_name in img_list:
         img_path = osp.join(img_dir, img_name)
         img_out_path = osp.join(out_dir, img_name)
+        start = time.time()
         result = inference_detector(model, img_path)
         img = show_result_rbox(img_path,
                                result,
@@ -79,7 +82,8 @@ def save_det_result(config_file, out_dir, checkpoint_file=None, img_dir=None, co
                                scale=1.0,
                                threshold=0.5,
                                colormap=colormap)
-        print(img_out_path)
+        end = time.time()
+        print(img_out_path, end-start)
         cv2.imwrite(img_out_path, img)
 
 
