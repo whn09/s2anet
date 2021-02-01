@@ -66,7 +66,7 @@ class RobagDataset(XMLDataset):
                 float(bnd_box.find('cy').text),
                 float(bnd_box.find('w').text),
                 float(bnd_box.find('h').text),
-                float(bnd_box.find('angle').text)
+                float(bnd_box.find('angle').text)+1
             ]
             
             # TODO: check whether it is necessary to use int

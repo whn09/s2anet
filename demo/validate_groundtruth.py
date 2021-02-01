@@ -33,8 +33,13 @@ def show_result_rbox(img,
             color = (random.randint(0, 256), random.randint(0, 256), random.randint(0, 256))
 
         for det in dets.reshape(1, -1):
+            cv2.circle(img, (det[0], det[1]), radius=2, color=color, thickness=2)
+            cv2.putText(img, '%.3f' % (det[4]), (det[0], det[1]),
+                            color=color_white, fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5)
+            
             score = 1.0
             det = rotated_box_to_poly_single(det)
+            
             bbox = det[:8] * scale
             if score < threshold:
                 continue
