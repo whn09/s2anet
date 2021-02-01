@@ -83,8 +83,8 @@ test_cfg = dict(
     nms=dict(type='nms_rotated', iou_thr=0.1),
     max_per_img=2000)
 # dataset settings
-dataset_type = 'DotaDataset'
-data_root = 'data/dota_1024/'
+dataset_type = 'RobagDataset'
+data_root = 'data/ROBAG/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 train_pipeline = [
@@ -117,22 +117,22 @@ data = dict(
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
-        ann_file=data_root + 'trainval_split/trainval_s2anet.pkl',
-        img_prefix=data_root + 'trainval_split/images/',
+        ann_file=data_root + 'ImageSets/Main/trainval.txt',
+        img_prefix=data_root,
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        ann_file=data_root + 'trainval_split/trainval_s2anet.pkl',
-        img_prefix=data_root + 'trainval_split/images/',
+        ann_file=data_root + 'ImageSets/Main/trainval.txt',
+        img_prefix=data_root,
         pipeline=test_pipeline),
     test=dict(
         type=dataset_type,
-        ann_file=data_root + 'test_split/test_s2anet.pkl',
-        img_prefix=data_root + 'test_split/images/',
+        ann_file=data_root + 'ImageSets/Main/test.txt',
+        img_prefix=data_root,
         pipeline=test_pipeline))
 evaluation = dict(
-    gt_dir='data/dota/test/labelTxt/', # change it to valset for offline validation
-    imagesetfile='data/dota/test/test.txt')
+    gt_dir='', # change it to valset for offline validation
+    imagesetfile='')
 # optimizer
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))
