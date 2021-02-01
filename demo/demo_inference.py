@@ -35,8 +35,10 @@ def show_result_rbox(img,
         try:
             dets = detections[j]
         except:
-            pdb.set_trace()
-        # import ipdb;ipdb.set_trace()
+#             pdb.set_trace()
+            print('no result')
+            return img  # TODO don't debug
+#         import ipdb;ipdb.set_trace()
         for det in dets:
             score = det[-1]
             det = rotated_box_to_poly_single(det[:-1])
