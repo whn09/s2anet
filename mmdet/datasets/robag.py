@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 import mmcv
 import numpy as np
 
+from mmdet.core import norm_angle
 from DOTA_devkit.ResultMerge_multi_process import mergebypoly
 from DOTA_devkit.dota_evaluation_task1 import voc_eval
 from mmdet.core import rotated_box_to_poly_single
@@ -26,6 +27,24 @@ class RobagDataset(XMLDataset):
         else:
 #             raise ValueError('Cannot infer dataset year from img_prefix')
             self.year = 2021
+    
+    def load_annotations(self, ann_file):
+        img_infos = []
+        img_ids = mmcv.list_from_file(ann_file)
+        self.img_ids = img_ids
+        self.cat_ids = self.CLASSES
+        for img_id in img_ids:
+            filename = 'JPEGImages/{}.jpg'.format(img_id)
+            xml_path = osp.join(self.img_prefix, 'Annotations',
+                                '{}.xml'.format(img_id))
+            tree = ET.parse(xml_path)
+            root = tree.getroot()
+            size = root.find('size')
+            width = int(size.find('width').text)
+            height = int(size.find('height').text)
+            img_infos.append(
+                dict(id=img_id, filename=filename, width=width, height=height))
+        return img_infos
     
     def get_ann_info(self, idx):
         img_id = self.img_infos[idx]['id']
@@ -49,6 +68,18 @@ class RobagDataset(XMLDataset):
                 float(bnd_box.find('h').text),
                 float(bnd_box.find('angle').text)
             ]
+            
+            # TODO: check whether it is necessary to use int
+            # Coordinates may be float type
+            cx, cy, w, h, a = list(map(float, bbox))
+            # set w the long side and h the short side
+            new_w, new_h = max(w, h), min(w, h)
+            # adjust angle
+            a = a if w > h else a + np.pi / 2
+            # normalize angle to [-np.pi/4, pi/4*3]
+            a = norm_angle(a)
+            bbox = [cx, cy, new_w, new_h, a]
+            
             ignore = False
             if self.min_size:
                 assert not self.test_mode
@@ -82,20 +113,14 @@ class RobagDataset(XMLDataset):
         return ann
 
     def evaluate(self, results, work_dir=None, gt_dir=None, imagesetfile=None):
-        dst_raw_path = osp.join(work_dir, 'results_before_nms')
-        dst_merge_path = osp.join(work_dir, 'results_after_nms')
-        mmcv.mkdir_or_exist(dst_raw_path)
-        mmcv.mkdir_or_exist(dst_merge_path)
+        results_path = osp.join(work_dir, 'results_txt')
+        mmcv.mkdir_or_exist(results_path)
 
-        print('Saving results to {}'.format(dst_raw_path))
-        self.result_to_txt(results, dst_raw_path)
+        print('Saving results to {}'.format(results_path))
+        self.result_to_txt(results, results_path)
 
-        print('Merge results to {}'.format(dst_merge_path))
-        mergebypoly(dst_raw_path, dst_merge_path)
-
-        print('Start evaluation')
-        detpath = osp.join(dst_merge_path, '{:s}.txt')
-        annopath = osp.join(gt_dir, '{:s}.txt')
+        detpath = osp.join(results_path, '{:s}.txt')
+        annopath = osp.join(gt_dir, '{:s}.xml')  # data/HRSC2016/Test/Annotations/{:s}.xml
 
         classaps = []
         map = 0
@@ -122,7 +147,7 @@ class RobagDataset(XMLDataset):
         return map
 
     def result_to_txt(self, results, results_path):
-        img_names = [img_info['filename'] for img_info in self.img_infos]
+        img_names = [img_info['id'] for img_info in self.img_infos]
 
         assert len(results) == len(img_names), 'len(results) != len(img_names)'
 

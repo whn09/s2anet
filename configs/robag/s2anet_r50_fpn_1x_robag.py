@@ -131,8 +131,8 @@ data = dict(
         img_prefix=data_root,
         pipeline=test_pipeline))
 evaluation = dict(
-    gt_dir='', # change it to valset for offline validation
-    imagesetfile='')
+    gt_dir='data/ROBAG/Annotations/', # change it to valset for offline validation
+    imagesetfile='data/ROBAG/ImageSets/Main/test.txt')
 # optimizer
 optimizer = dict(type='SGD', lr=0.01, momentum=0.9, weight_decay=0.0001)
 optimizer_config = dict(grad_clip=dict(max_norm=35, norm_type=2))

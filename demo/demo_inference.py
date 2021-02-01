@@ -59,10 +59,10 @@ def show_result_rbox(img,
 
 def save_det_result(config_file, out_dir, checkpoint_file=None, img_dir=None, colormap=None):
     cfg = Config.fromfile(config_file)
-#     data_test = cfg.data.test
-#     dataset = build_dataset(data_test)
-#     classnames = dataset.CLASSES
-    classnames = [i for i in range(15)]  # TODO
+    data_test = cfg.data.test
+    dataset = build_dataset(data_test)
+    classnames = dataset.CLASSES
+#     classnames = [i for i in range(15)]  # TODO
     # use checkpoint path in cfg
     if not checkpoint_file:
         checkpoint_file = osp.join(cfg.work_dir, 'latest.pth')
@@ -95,6 +95,12 @@ if __name__ == '__main__':
     parser.add_argument('model', help='pretrain model')
     parser.add_argument('img_dir', help='img dir')
     parser.add_argument('out_dir', help='output dir')
+    parser.add_argument(
+        'data',
+        choices=['coco', 'dota', 'dota_large', 'dota_hbb', 'hrsc2016', 'voc', 'robag'],
+        default='dota',
+        type=str,
+        help='dataset type')
     args = parser.parse_args()
 
     dota_colormap = [
@@ -113,7 +119,18 @@ if __name__ == '__main__':
         (0, 152, 255),
         (34, 87, 255),
         (72, 85, 121)]
-
     hrsc2016_colormap = [(212, 188, 0)]
+    robag_colormap = [(212, 188, 0)]
+    
+    data_name = args.data
+    if data_name == 'dota':
+        colormap = dota_colormap
+    elif data_name == 'hrsc2016':
+        colormap = hrsc2016_colormap
+    elif data_name == 'robag':
+        colormap = robag_colormap
+    else:
+        print('ERROR:', data_name, 'not supported')
+    
     save_det_result(args.config_file, args.out_dir, checkpoint_file=args.model, img_dir=args.img_dir,
-                    colormap=dota_colormap)
+                    colormap=colormap)
