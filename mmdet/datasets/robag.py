@@ -66,7 +66,7 @@ class RobagDataset(XMLDataset):
                 float(bnd_box.find('cy').text),
                 float(bnd_box.find('w').text),
                 float(bnd_box.find('h').text),
-                float(bnd_box.find('angle').text)+1
+                float(bnd_box.find('angle').text)+1  # important!
             ]
             
             # TODO: check whether it is necessary to use int
@@ -125,14 +125,15 @@ class RobagDataset(XMLDataset):
         classaps = []
         map = 0
         for classname in self.CLASSES:
+            print('classname:', classname)
             rec, prec, ap = voc_eval(detpath,
                                      annopath,
                                      imagesetfile,
                                      classname,
-                                     ovthresh=0.5,
+                                     ovthresh=0.5,  # default: 0.5
                                      use_07_metric=True)
             map = map + ap
-            print(classname, ': ', ap)
+            print(classname, ': ', rec, prec, ap)
             classaps.append(ap)
 
         map = map / len(self.CLASSES)

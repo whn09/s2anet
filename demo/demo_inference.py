@@ -91,12 +91,12 @@ def save_det_result(config_file, out_dir, checkpoint_file=None, img_dir=None, co
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='inference demo')
-    parser.add_argument('config_file', help='input config file')
-    parser.add_argument('model', help='pretrain model')
-    parser.add_argument('img_dir', help='img dir')
-    parser.add_argument('out_dir', help='output dir')
+    parser.add_argument('--config_file', help='input config file')
+    parser.add_argument('--model', help='pretrain model')
+    parser.add_argument('--img_dir', help='img dir')
+    parser.add_argument('--out_dir', help='output dir')
     parser.add_argument(
-        'data',
+        '--data',
         choices=['coco', 'dota', 'dota_large', 'dota_hbb', 'hrsc2016', 'voc', 'robag'],
         default='dota',
         type=str,

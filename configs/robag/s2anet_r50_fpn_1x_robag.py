@@ -113,7 +113,7 @@ test_pipeline = [
         ])
 ]
 data = dict(
-    imgs_per_gpu=2,
+    imgs_per_gpu=8,  # batch_size
     workers_per_gpu=2,
     train=dict(
         type=dataset_type,
@@ -150,7 +150,7 @@ log_config = dict(
         dict(type='TextLoggerHook'),
     ])
 # runtime settings
-total_epochs = 12
+total_epochs = 120
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = None
