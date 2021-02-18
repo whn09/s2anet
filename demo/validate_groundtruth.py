@@ -57,7 +57,9 @@ def show_result_rbox(img,
 
 def save_det_result(config_file, out_dir, img_dir=None, colormap=None):
     cfg = Config.fromfile(config_file)
+#     data_train = cfg.data.train
     data_test = cfg.data.test
+#     dataset = build_dataset(data_train)
     dataset = build_dataset(data_test)
     classnames = dataset.CLASSES
 #     classnames = [i for i in range(15)]  # TODO
