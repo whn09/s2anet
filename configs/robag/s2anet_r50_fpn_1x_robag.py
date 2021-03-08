@@ -145,12 +145,12 @@ lr_config = dict(
     step=[8, 11])
 checkpoint_config = dict(interval=1)
 log_config = dict(
-    interval=50,
+    interval=5,
     hooks=[
         dict(type='TextLoggerHook'),
     ])
 # runtime settings
-total_epochs = 120
+total_epochs = 400
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
 load_from = None

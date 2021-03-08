@@ -82,7 +82,7 @@ def save_det_result(config_file, out_dir, checkpoint_file=None, img_dir=None, co
                                result,
                                classnames,
                                scale=1.0,
-                               threshold=0.5,
+                               threshold=0.1,
                                colormap=colormap)
         end = time.time()
         print(img_out_path, end-start)
