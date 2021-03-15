@@ -75,6 +75,7 @@ def inference_detector(model, img):
     """
     cfg = model.cfg
     device = next(model.parameters()).device  # model device
+    print('device:', type(device), device)
     # build the data pipeline
     test_pipeline = [LoadImage()] + cfg.data.test.pipeline[1:]
     test_pipeline = Compose(test_pipeline)
