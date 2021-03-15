@@ -82,7 +82,7 @@ def inference_detector(model, img):
     # prepare data
     data = dict(img=img)
     data = test_pipeline(data)
-    if device != 'cpu':
+    if device != torch.device('cpu'):
         data = scatter(collate([data], samples_per_gpu=1), [device])[0]
     # forward the model
     with torch.no_grad():
