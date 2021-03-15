@@ -5,6 +5,7 @@ import mmcv
 import numpy as np
 import pycocotools.mask as maskUtils
 import torch
+from mmcv.ops import RoIAlign, RoIPool
 from mmcv.parallel import collate, scatter
 from mmcv.runner import load_checkpoint
 
@@ -75,15 +76,27 @@ def inference_detector(model, img):
     """
     cfg = model.cfg
     device = next(model.parameters()).device  # model device
-    print('device:', type(device), device)
     # build the data pipeline
     test_pipeline = [LoadImage()] + cfg.data.test.pipeline[1:]
     test_pipeline = Compose(test_pipeline)
     # prepare data
     data = dict(img=img)
     data = test_pipeline(data)
-    if device != torch.device('cpu'):
-        data = scatter(collate([data], samples_per_gpu=1), [device])[0]
+    data = collate([data], samples_per_gpu=1)
+    if next(model.parameters()).is_cuda:
+        data = scatter(data, [device])[0]
+    else:
+        # Use torchvision ops for CPU mode instead
+        for m in model.modules():
+            if isinstance(m, (RoIPool, RoIAlign)):
+                if not m.aligned:
+                    # aligned=False is not implemented on CPU
+                    # set use_torchvision on-the-fly
+                    m.use_torchvision = True
+        warnings.warn('We set use_torchvision=True in CPU mode.')
+        # just get the actual data from DataContainer
+        data['img_metas'] = data['img_metas'][0].data
+
     # forward the model
     with torch.no_grad():
         result = model(return_loss=False, rescale=True, **data)
