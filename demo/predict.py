@@ -6,7 +6,6 @@ import random
 
 import cv2
 import mmcv
-from mmcv import Config
 
 from mmdet.apis import init_detector, inference_detector
 from mmdet.core import rotated_box_to_poly_single
@@ -99,6 +98,6 @@ if __name__ == '__main__':
     classnames = ['bag']
 
     # model = init_detector(config_file, checkpoint_file, device='cuda:0')
-    model = init_detector(args.config_file, args.model, device='cpu:0')
+    model = init_detector(args.config_file, args.model, device='cpu')
     
     save_det_result(args.out_dir, img_dir=args.img_dir, colormap=colormap, img_name=args.img_name)
