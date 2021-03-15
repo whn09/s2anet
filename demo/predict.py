@@ -96,13 +96,9 @@ if __name__ == '__main__':
     else:
         print('ERROR:', data_name, 'not supported')
 
-    cfg = Config.fromfile(args.config_file)
     classnames = ['bag']
-    # use checkpoint path in cfg
-    if not args.model:
-        checkpoint_file = osp.join(cfg.work_dir, 'latest.pth')
 
     # model = init_detector(config_file, checkpoint_file, device='cuda:0')
-    model = init_detector(args.config_file, checkpoint_file, device='cpu:0')
+    model = init_detector(args.config_file, args.model, device='cpu:0')
     
     save_det_result(args.out_dir, img_dir=args.img_dir, colormap=colormap, img_name=args.img_name)
