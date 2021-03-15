@@ -82,6 +82,7 @@ def inference_detector(model, img):
     data = dict(img=img)
     data = test_pipeline(data)
     data = collate([data], samples_per_gpu=1)
+    print('data:', data)
     if next(model.parameters()).is_cuda:
         data = scatter(data, [device])[0]
     else:
