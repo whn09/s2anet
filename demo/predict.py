@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     classnames = ['bag']
 
-    # model = init_detector(config_file, checkpoint_file, device='cuda:0')
-    model = init_detector(args.config_file, args.model, device='cpu')
+    model = init_detector(args.config_file, args.model, device='cuda:0')
+    # model = init_detector(args.config_file, args.model, device='cpu')  # TODO bug
     
     save_det_result(args.out_dir, img_dir=args.img_dir, colormap=colormap, img_name=args.img_name)
