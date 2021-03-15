@@ -100,4 +100,5 @@ if __name__ == '__main__':
     model = init_detector(args.config_file, args.model, device='cuda:0')
     # model = init_detector(args.config_file, args.model, device='cpu')  # TODO bug
     
-    save_det_result(args.out_dir, img_dir=args.img_dir, colormap=colormap, img_name=args.img_name)
+    for _ in range(10):
+        save_det_result(args.out_dir, img_dir=args.img_dir, colormap=colormap, img_name=args.img_name)
